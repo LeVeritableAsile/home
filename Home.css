@@ -10,6 +10,7 @@
 
 .home-shouts-message {
     padding: 0 1.417em 0 1.417em;
+    word-break: break-all;
 }
 
 #home-shout-form div {
@@ -32,6 +33,7 @@
 }
 
 .home-shouts-date {
+    margin: 0 -1px 0 -1px;
 }
 
 .home-shouts-message-text, .home-shouts-message-text p {
