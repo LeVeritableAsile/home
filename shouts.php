@@ -70,6 +70,7 @@ if ($action == 'view' || $action == 'post')
     $forum_db->free_result($result);
 
     // Perform formating.
+    $shout_lastdate = 'invalid';
     foreach ($shouts as $shout)
     {
         $shout_date = format_time($shout['shouted'], FORUM_FT_DATE);
