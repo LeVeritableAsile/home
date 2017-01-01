@@ -58,7 +58,7 @@ if ($action == 'view' || $action == 'post')
     if ($from && $to)
         $query['WHERE'] = "s.shouted BETWEEN {$from} AND {$to}";
     else 
-        $query['LIMIT'] = '0, 25';
+        $query['LIMIT'] = '0, 40';
 
     // Execute query.
     $result = $forum_db->query_build($query) or error(__FILE__, __LINE__);
