@@ -23,18 +23,18 @@ $forum_page['item_body']['csrf_token'] = generate_form_token($forum_page['item_b
     <div id="home">
         <div id="home-shouts" class="main-content">
 <?php
-    if (!$forum_user['is_guest'])
-    {
+if (!$forum_user['is_guest'])
+{
 ?>
             <form id="home-shout-form" action="<?php echo $forum_page['item_body']['action'] ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo $forum_page['item_body']['csrf_token'] ?>" />
                 <div>
                     <div class="submit primary"><input type="submit" value="Shout"></div>
-                    <div class="fdl-input"><input type="text" name="text"></div>
+                    <div class="fdl-input"><input id="home-shout-form-input" type="text" name="text"></div>
                 </div>
             </form>
 <?php
-    }
+}
 ?>
             <div id="home-shouts-messages"></div>
         </div>
@@ -47,12 +47,32 @@ $tpl_main = str_replace('<!-- forum_main -->', $tpl_temp, $tpl_main);
 ob_end_clean();
 // END SUBST - <!-- forum_main -->
 
-$shout_js = '
-    function load_shouts() {
-        $("#home-shouts-messages").load("shouts.php?action=view")
-        setTimeout(load_shouts, 30 * 1000);
-    }
+if ($forum_user['is_guest'])
+    $shout_js = '
+        function load_shouts() {
+            $("#home-shouts-messages").load("shouts.php?action=view")
 
+            setTimeout(load_shouts, 30 * 1000);
+        }';
+else
+    $shout_js = '
+        function load_shouts() {
+            $("#home-shouts-messages").load("shouts.php?action=view",
+                                            function() {
+                    $(".home-shouts-message").click(function(event) {
+                        var prefix = "[i]@";
+                        prefix += $(".home-shouts-message-user", this).text();
+                        prefix += "[/i] ";
+
+                        $("#home-shout-form-input").val(prefix);
+                    });
+                }
+            );
+
+            setTimeout(load_shouts, 30 * 1000);
+        }';
+
+$shout_js .= '
     $("#home-shout-form").submit(function(event) {
         $.ajax({
             url: $(this).attr("action"),
