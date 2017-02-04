@@ -48,31 +48,28 @@ ob_end_clean();
 // END SUBST - <!-- forum_main -->
 
 if ($forum_user['is_guest'])
-    $shout_js = '
-        function load_shouts() {
-            $("#home-shouts-messages").load("shouts.php?action=view")
-
-            setTimeout(load_shouts, 30 * 1000);
-        }';
+    $shout_js = 'function bind_shout_prefix_event() { };';
 else
     $shout_js = '
-        function load_shouts() {
-            $("#home-shouts-messages").load("shouts.php?action=view",
-                                            function() {
-                    $(".home-shouts-message").click(function(event) {
-                        var prefix = "[i]@";
-                        prefix += $(".home-shouts-message-user", this).text();
-                        prefix += "[/i] ";
+        function bind_shout_prefix_event() {
+            $(".home-shouts-message").click(function(event) {
+                var prefix = "[i]@";
+                prefix += $(".home-shouts-message-user", this).text();
+                prefix += "[/i] ";
 
-                        $("#home-shout-form-input").val(prefix);
-                    });
-                }
-            );
-
-            setTimeout(load_shouts, 30 * 1000);
-        }';
+                $("#home-shout-form-input").val(prefix);
+            });
+        };
+    ';
 
 $shout_js .= '
+    function load_shouts() {
+        $("#home-shouts-messages").load("shouts.php?action=view",
+                                        bind_shout_prefix_event);
+
+        setTimeout(load_shouts, 30 * 1000);
+    }
+
     $("#home-shout-form").submit(function(event) {
         $.ajax({
             url: $(this).attr("action"),
@@ -81,6 +78,7 @@ $shout_js .= '
             data: $(this).serialize(),
             success: function(data) {
                 $("#home-shouts-messages").html(data);
+                bind_shout_prefix_event();
                 $("#home-shout-form")[0].reset();
             }
         });
